@@ -1,6 +1,8 @@
-﻿namespace BookStore.Domain.Models.User
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace BookStore.Domain.Models.User
 {
-    public class User
+    public class ApplicationUser : IdentityUser
     {
         public string FullName { get; set; }
     }
