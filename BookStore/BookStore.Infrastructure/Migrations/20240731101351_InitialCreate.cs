@@ -222,75 +222,81 @@ namespace BookStore.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ApplicationUserBook",
+                name: "BookAuthor",
                 columns: table => new
                 {
-                    BooksId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookId = table.Column<int>(type: "int", nullable: true),
+                    AuthorId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ApplicationUserBook", x => new { x.BooksId, x.UsersId });
+                    table.PrimaryKey("PK_BookAuthor", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ApplicationUserBook_AspNetUsers_UsersId",
-                        column: x => x.UsersId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ApplicationUserBook_Books_BooksId",
-                        column: x => x.BooksId,
-                        principalTable: "Books",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AuthorBook",
-                columns: table => new
-                {
-                    AuthorsId = table.Column<int>(type: "int", nullable: false),
-                    BooksId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AuthorBook", x => new { x.AuthorsId, x.BooksId });
-                    table.ForeignKey(
-                        name: "FK_AuthorBook_Authors_AuthorsId",
-                        column: x => x.AuthorsId,
+                        name: "FK_BookAuthor_Authors_AuthorId",
+                        column: x => x.AuthorId,
                         principalTable: "Authors",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_AuthorBook_Books_BooksId",
-                        column: x => x.BooksId,
+                        name: "FK_BookAuthor_Books_BookId",
+                        column: x => x.BookId,
                         principalTable: "Books",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
                 name: "BookCategory",
                 columns: table => new
                 {
-                    BooksId = table.Column<int>(type: "int", nullable: false),
-                    CategoriesId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookId = table.Column<int>(type: "int", nullable: true),
+                    CategoryId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BookCategory", x => new { x.BooksId, x.CategoriesId });
+                    table.PrimaryKey("PK_BookCategory", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BookCategory_Books_BooksId",
-                        column: x => x.BooksId,
+                        name: "FK_BookCategory_Books_BookId",
+                        column: x => x.BookId,
                         principalTable: "Books",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_BookCategory_Categories_CategoriesId",
-                        column: x => x.CategoriesId,
+                        name: "FK_BookCategory_Categories_CategoryId",
+                        column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BookUser",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookUser", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BookUser_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_BookUser_Books_BookId",
+                        column: x => x.BookId,
+                        principalTable: "Books",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -322,11 +328,6 @@ namespace BookStore.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ApplicationUserBook_UsersId",
-                table: "ApplicationUserBook",
-                column: "UsersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -368,19 +369,39 @@ namespace BookStore.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AuthorBook_BooksId",
-                table: "AuthorBook",
-                column: "BooksId");
+                name: "IX_BookAuthor_AuthorId",
+                table: "BookAuthor",
+                column: "AuthorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BookCategory_CategoriesId",
+                name: "IX_BookAuthor_BookId",
+                table: "BookAuthor",
+                column: "BookId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookCategory_BookId",
                 table: "BookCategory",
-                column: "CategoriesId");
+                column: "BookId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookCategory_CategoryId",
+                table: "BookCategory",
+                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Books_PublisherId",
                 table: "Books",
                 column: "PublisherId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookUser_BookId",
+                table: "BookUser",
+                column: "BookId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookUser_UserId",
+                table: "BookUser",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_BookId",
@@ -395,9 +416,6 @@ namespace BookStore.Infrastructure.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ApplicationUserBook");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -414,10 +432,13 @@ namespace BookStore.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "AuthorBook");
+                name: "BookAuthor");
 
             migrationBuilder.DropTable(
                 name: "BookCategory");
+
+            migrationBuilder.DropTable(
+                name: "BookUser");
 
             migrationBuilder.DropTable(
                 name: "Reviews");

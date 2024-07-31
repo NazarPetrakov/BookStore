@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookStore.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240730113843_InitialCreate")]
+    [Migration("20240731101351_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,51 +23,6 @@ namespace BookStore.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("ApplicationUserBook", b =>
-                {
-                    b.Property<int>("BooksId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UsersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("BooksId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("ApplicationUserBook");
-                });
-
-            modelBuilder.Entity("AuthorBook", b =>
-                {
-                    b.Property<int>("AuthorsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BooksId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AuthorsId", "BooksId");
-
-                    b.HasIndex("BooksId");
-
-                    b.ToTable("AuthorBook");
-                });
-
-            modelBuilder.Entity("BookCategory", b =>
-                {
-                    b.Property<int>("BooksId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CategoriesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("BooksId", "CategoriesId");
-
-                    b.HasIndex("CategoriesId");
-
-                    b.ToTable("BookCategory");
-                });
 
             modelBuilder.Entity("BookStore.Domain.Models.Author.Author", b =>
                 {
@@ -152,6 +107,75 @@ namespace BookStore.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("BookStore.Domain.Models.JoinEntities.BookAuthor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BookId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("BookId");
+
+                    b.ToTable("BookAuthor");
+                });
+
+            modelBuilder.Entity("BookStore.Domain.Models.JoinEntities.BookCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("BookCategory");
+                });
+
+            modelBuilder.Entity("BookStore.Domain.Models.JoinEntities.BookUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BookUser");
                 });
 
             modelBuilder.Entity("BookStore.Domain.Models.Publisher.Publisher", b =>
@@ -415,51 +439,6 @@ namespace BookStore.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ApplicationUserBook", b =>
-                {
-                    b.HasOne("BookStore.Domain.Models.Book.Book", null)
-                        .WithMany()
-                        .HasForeignKey("BooksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookStore.Domain.Models.User.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("AuthorBook", b =>
-                {
-                    b.HasOne("BookStore.Domain.Models.Author.Author", null)
-                        .WithMany()
-                        .HasForeignKey("AuthorsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookStore.Domain.Models.Book.Book", null)
-                        .WithMany()
-                        .HasForeignKey("BooksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("BookCategory", b =>
-                {
-                    b.HasOne("BookStore.Domain.Models.Book.Book", null)
-                        .WithMany()
-                        .HasForeignKey("BooksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookStore.Domain.Models.Category.Category", null)
-                        .WithMany()
-                        .HasForeignKey("CategoriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BookStore.Domain.Models.Book.Book", b =>
                 {
                     b.HasOne("BookStore.Domain.Models.Publisher.Publisher", "Publisher")
@@ -467,6 +446,57 @@ namespace BookStore.Infrastructure.Migrations
                         .HasForeignKey("PublisherId");
 
                     b.Navigation("Publisher");
+                });
+
+            modelBuilder.Entity("BookStore.Domain.Models.JoinEntities.BookAuthor", b =>
+                {
+                    b.HasOne("BookStore.Domain.Models.Author.Author", "Author")
+                        .WithMany("BookAuthors")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("BookStore.Domain.Models.Book.Book", "Book")
+                        .WithMany("BookAuthors")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Book");
+                });
+
+            modelBuilder.Entity("BookStore.Domain.Models.JoinEntities.BookCategory", b =>
+                {
+                    b.HasOne("BookStore.Domain.Models.Book.Book", "Book")
+                        .WithMany("BookCategories")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("BookStore.Domain.Models.Category.Category", "Category")
+                        .WithMany("BookCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("BookStore.Domain.Models.JoinEntities.BookUser", b =>
+                {
+                    b.HasOne("BookStore.Domain.Models.Book.Book", "Book")
+                        .WithMany("BookUsers")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("BookStore.Domain.Models.User.ApplicationUser", "User")
+                        .WithMany("BookUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BookStore.Domain.Models.Review.Review", b =>
@@ -539,9 +569,25 @@ namespace BookStore.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BookStore.Domain.Models.Author.Author", b =>
+                {
+                    b.Navigation("BookAuthors");
+                });
+
             modelBuilder.Entity("BookStore.Domain.Models.Book.Book", b =>
                 {
+                    b.Navigation("BookAuthors");
+
+                    b.Navigation("BookCategories");
+
+                    b.Navigation("BookUsers");
+
                     b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("BookStore.Domain.Models.Category.Category", b =>
+                {
+                    b.Navigation("BookCategories");
                 });
 
             modelBuilder.Entity("BookStore.Domain.Models.Publisher.Publisher", b =>
@@ -551,6 +597,8 @@ namespace BookStore.Infrastructure.Migrations
 
             modelBuilder.Entity("BookStore.Domain.Models.User.ApplicationUser", b =>
                 {
+                    b.Navigation("BookUsers");
+
                     b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
