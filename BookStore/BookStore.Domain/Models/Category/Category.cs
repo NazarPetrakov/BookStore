@@ -4,7 +4,7 @@
     {
         public string Name { get; set; }
 
-        public ICollection<Book.Book> Books { get; } = new List<Book.Book>();
+        public ICollection<JoinEntities.BookCategory> BookCategories { get; set; } = new List<JoinEntities.BookCategory>();
 
     }
 }

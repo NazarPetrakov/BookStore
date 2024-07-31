@@ -8,7 +8,7 @@ namespace BookStore.Domain.Models.User
 
         public ICollection<Review.Review> Reviews { get; } = new List<Review.Review>();
 
-        public ICollection<Book.Book> Books { get; } = new List<Book.Book>();
+        public ICollection<JoinEntities.BookUser> BookUsers { get; set; } = new List<JoinEntities.BookUser>();
 
     }
 }

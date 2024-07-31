@@ -42,3 +42,4 @@ namespace BookStore.Api
         }
     }
 }
+// Change many to many config(add on model creating)

@@ -12,6 +12,11 @@ namespace BookStore.Infrastructure.Configurations
                 .Property(e => e.Name)
                 .HasMaxLength(64)
                 .IsRequired();
+
+            builder
+                .HasMany(e => e.BookCategories)
+                .WithOne(e => e.Category)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

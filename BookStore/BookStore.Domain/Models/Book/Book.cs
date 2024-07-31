@@ -12,11 +12,9 @@
         public Publisher.Publisher? Publisher { get; set; }
 
         public ICollection<Review.Review> Reviews { get;} = new List<Review.Review>();
+        public ICollection<JoinEntities.BookAuthor> BookAuthors { get; set; } = new List<JoinEntities.BookAuthor>();
+        public ICollection<JoinEntities.BookCategory> BookCategories { get; set; } = new List<JoinEntities.BookCategory>();
+        public ICollection<JoinEntities.BookUser> BookUsers { get; set; } = new List<JoinEntities.BookUser>();
 
-        public ICollection<Author.Author> Authors { get; } = new List<Author.Author>();
-
-        public ICollection<Category.Category> Categories { get; } = new List<Category.Category>();
-
-        public ICollection<User.ApplicationUser> Users { get; } = new List<User.ApplicationUser>();
     }
 }
