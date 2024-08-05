@@ -9,18 +9,18 @@ namespace BookStore.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<Book> builder)
         {
             builder
-                .HasMany(e => e.Reviews)
-                .WithOne(e => e.Book)
-                .HasForeignKey(e => e.BookId)
+                .HasMany(b => b.Reviews)
+                .WithOne(r => r.Book)
+                .HasForeignKey(r => r.BookId)
                 .IsRequired();
 
             builder
-                .Property(e => e.Title)
+                .Property(b => b.Title)
                 .HasMaxLength(128)
                 .IsRequired();
 
             builder
-                .Property(e => e.ISBN)
+                .Property(b => b.ISBN)
                 .HasMaxLength(13)
                 .IsRequired();
 
@@ -28,33 +28,33 @@ namespace BookStore.Infrastructure.Configurations
                 .HasCheckConstraint("CK_Book_ISBN_MinLength", "LEN(ISBN) >= 10");
 
             builder
-                .Property(t => t.PublicationYear)
+                .Property(b => b.PublicationYear)
                 .HasColumnType("date")
                 .IsRequired();
 
             builder
-                .Property(t => t.Price)
+                .Property(b => b.Price)
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
 
             builder
-                .Property(t => t.Description)
+                .Property(b => b.Description)
                 .HasMaxLength(1024)
                 .IsRequired(false);
 
             builder
-                .HasMany(e => e.BookAuthors)
-                .WithOne(e => e.Book)
+                .HasMany(b => b.BookAuthors)
+                .WithOne(ba => ba.Book)
                 .OnDelete(DeleteBehavior.SetNull);
 
             builder
-                .HasMany(e => e.BookCategories)
-                .WithOne(e => e.Book)
+                .HasMany(b => b.BookCategories)
+                .WithOne(bc => bc.Book)
                 .OnDelete(DeleteBehavior.SetNull);
 
             builder
-                .HasMany(e => e.BookUsers)
-                .WithOne(e => e.Book)
+                .HasMany(b => b.BookUsers)
+                .WithOne(bu => bu.Book)
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }

@@ -9,18 +9,18 @@ namespace BookStore.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<Publisher> builder)
         {
             builder
-                .HasMany(e => e.Books)
-                .WithOne(e => e.Publisher)
-                .HasForeignKey(e => e.PublisherId)
+                .HasMany(p => p.Books)
+                .WithOne(b => b.Publisher)
+                .HasForeignKey(b => b.PublisherId)
                 .IsRequired(false);
 
             builder
-                .Property(e => e.Name)
+                .Property(p => p.Name)
                 .HasMaxLength(64)
                 .IsRequired();
 
             builder
-                .Property(e => e.Address)
+                .Property(p => p.Address)
                 .HasMaxLength(256)
                 .IsRequired();
         }

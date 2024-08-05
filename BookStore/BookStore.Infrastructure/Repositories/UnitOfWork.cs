@@ -9,11 +9,15 @@ namespace BookStore.Infrastructure.Repositories
         private readonly AppDbContext _dbContext;
         public IPublisherRepository PublisherRepository { get; }
 
+        public IAuthorRepository AuthorRepository { get; }
+
         public UnitOfWork(AppDbContext dbContext,
-                            IPublisherRepository publisherRepository)
+                            IPublisherRepository publisherRepository,
+                            IAuthorRepository authorRepository)
         {
             _dbContext = dbContext;
             PublisherRepository = publisherRepository;
+            AuthorRepository = authorRepository;
         }
 
         public void Dispose()

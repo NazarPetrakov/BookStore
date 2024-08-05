@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookStore.Api.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/publishers")]
     [ApiController]
 
     public class PublishersController : ControllerBase
@@ -31,13 +31,13 @@ namespace BookStore.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePublisher createPublisher)
         {
-            var publisher = _mapper.Map<Publisher>(createPublisher);
+            var publisherEntity = _mapper.Map<Publisher>(createPublisher);
 
-            var isPublisherCreated = await _publisherService.CreateAsync(publisher);
+            var isPublisherCreated = await _publisherService.CreateAsync(publisherEntity);
 
             if (isPublisherCreated)
                 return CreatedAtAction("Create",
-                    new { id = publisher.Id, Publisher = createPublisher});
+                    new { id = publisherEntity.Id, Publisher = createPublisher});
             else
                 return BadRequest();
         }

@@ -20,6 +20,9 @@ namespace BookStore.Infrastructure.Extensions
             services.AddScoped<IPublisherRepository, PublisherRepository>();
             services.AddScoped<IPublisherService, PublisherService>();
 
+            services.AddScoped<IAuthorRepository, AuthorRepository>();
+            services.AddScoped<IAuthorService, AuthorService>();
+
             return services;
         }
     }

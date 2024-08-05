@@ -37,7 +37,7 @@ namespace BookStore.Infrastructure.Repositories
 
         public virtual async Task<T?> GetByIdAsync(int id)
         {
-            return await _entities.FirstOrDefaultAsync(s => s.Id == id);
+            return await _entities.FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public  void Update(T entity)

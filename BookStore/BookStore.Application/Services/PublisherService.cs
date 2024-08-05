@@ -65,8 +65,8 @@ namespace BookStore.Application.Services
             if (entity == null)
                 throw new EntityNotFoundException("Publissher not found");
 
-            entity.Name = publisher.Name;
-            entity.Address = publisher.Address;
+            entity.Name = publisher.Name ?? entity.Name;
+            entity.Address = publisher.Address ?? entity.Address;
 
             UnitOfWork.PublisherRepository.Update(entity);
 

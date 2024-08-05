@@ -9,23 +9,23 @@ namespace BookStore.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<Author> builder)
         {
             builder
-                .Property(e => e.FirstName)
+                .Property(a => a.FirstName)
                 .HasMaxLength(64)
                 .IsRequired();
 
             builder
-                .Property(e => e.LastName)
+                .Property(a => a.LastName)
                 .HasMaxLength(64)
                 .IsRequired();
 
             builder
-                .Property(e => e.Bio)
+                .Property(a => a.Bio)
                 .HasMaxLength(512)
                 .IsRequired(false);
 
             builder
-                .HasMany(e => e.BookAuthors)
-                .WithOne(e => e.Author)
+                .HasMany(a => a.BookAuthors)
+                .WithOne(ba => ba.Author)
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }
