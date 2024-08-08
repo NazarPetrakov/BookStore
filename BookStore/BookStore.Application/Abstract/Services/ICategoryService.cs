@@ -1,4 +1,5 @@
 ﻿using BookStore.Domain.Models.Author;
+using BookStore.Domain.Models.Book;
 using BookStore.Domain.Models.Category;
 
 namespace BookStore.Application.Abstract.Services
@@ -14,6 +15,6 @@ namespace BookStore.Application.Abstract.Services
         Task<bool> UpdateAsync(Category category);
 
         Task<bool> DeleteAsync(int categoryId);
-        Task<IEnumerable<Category>> GetBooksByCategory(int categoryId);
+        Task<IEnumerable<Book>> GetBooksByCategoryAsync(int categoryId);
     }
 }

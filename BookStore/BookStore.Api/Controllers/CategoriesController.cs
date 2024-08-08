@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BookStore.Application.Abstract.Services;
+using BookStore.Application.Contracts.Book;
 using BookStore.Application.Contracts.Category;
 using BookStore.Domain.Models.Category;
 using Microsoft.AspNetCore.Mvc;
@@ -48,6 +49,15 @@ namespace BookStore.Api.Controllers
             var category = _mapper.Map<GetCategory>(entity);
 
             return Ok(category);
+        }
+        [HttpGet("{id}/books")]
+        public async Task<IActionResult> GetBooksByCategoryId(int id)
+        {
+            var bookEntities = await _categoryService.GetBooksByCategoryAsync(id);
+
+            var books = _mapper.Map<IEnumerable<GetBook>>(bookEntities);
+
+            return Ok(books);
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

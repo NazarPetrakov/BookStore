@@ -14,6 +14,6 @@ namespace BookStore.Application.Abstract.Services
         Task<bool> UpdateAsync(Author author);
 
         Task<bool> DeleteAsync(int authorId);
-        Task<IEnumerable<Author>> GetBooksByAuthor(int authorId);
+        Task<IEnumerable<Book>> GetBooksByAuthorAsync(int authorId);
     }
 }

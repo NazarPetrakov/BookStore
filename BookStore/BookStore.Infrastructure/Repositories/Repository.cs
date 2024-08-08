@@ -30,7 +30,7 @@ namespace BookStore.Infrastructure.Repositories
             return await _entities.FirstOrDefaultAsync(predicate);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _entities.ToListAsync();
         }

@@ -1,6 +1,7 @@
 ﻿using BookStore.Application.Abstract;
 using BookStore.Application.Abstract.Services;
 using BookStore.Domain.Exceptions;
+using BookStore.Domain.Models.Book;
 using BookStore.Domain.Models.Category;
 
 namespace BookStore.Application.Services
@@ -71,9 +72,18 @@ namespace BookStore.Application.Services
 
             return SaveChangesAndCheckResult();
         }
-        public async Task<IEnumerable<Category>> GetBooksByCategory(int categoryId)
+        public async Task<IEnumerable<Book>> GetBooksByCategoryAsync(int categoryId)
         {
-            throw new NotImplementedException();
+            var entity = await UnitOfWork.CategoryRepository
+                .GetByIdAsync(categoryId);
+
+            if (entity == null)
+                throw new EntityNotFoundException("Category not found");
+
+            var books = await UnitOfWork.BookCategoryRepository
+                .GetBooksByCategoryIdAsync(categoryId);
+
+            return books!;
         }
         private bool SaveChangesAndCheckResult()
         {

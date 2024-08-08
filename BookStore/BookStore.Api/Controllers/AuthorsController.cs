@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using BookStore.Application.Abstract.Services;
 using BookStore.Application.Contracts.Author;
+using BookStore.Application.Contracts.Book;
+using BookStore.Application.Services;
 using BookStore.Domain.Models.Author;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,6 +50,15 @@ namespace BookStore.Api.Controllers
             var author = _mapper.Map<GetAuthor>(entity);
 
             return Ok(author);
+        }
+        [HttpGet("{id}/books")]
+        public async Task<IActionResult> GetBooksByAuthorId(int id)
+        {
+            var bookEntities = await _authorService.GetBooksByAuthorAsync(id);
+
+            var books = _mapper.Map<IEnumerable<GetBook>>(bookEntities);
+
+            return Ok(books);
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

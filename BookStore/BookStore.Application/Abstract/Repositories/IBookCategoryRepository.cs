@@ -1,4 +1,5 @@
-﻿using BookStore.Domain.Models.JoinEntities;
+﻿using BookStore.Domain.Models.Book;
+using BookStore.Domain.Models.JoinEntities;
 
 namespace BookStore.Application.Abstract.Repositories
 {
@@ -7,5 +8,6 @@ namespace BookStore.Application.Abstract.Repositories
         Task<ICollection<BookCategory>> GetAllAsync();
         void RemoveRange(IEnumerable<BookCategory> entities);
         void AddRange(IEnumerable<BookCategory> entities);
+        Task<ICollection<Book?>?> GetBooksByCategoryIdAsync(int categoryId);
     }
 }
