@@ -1,12 +1,8 @@
 ﻿using BookStore.Application.Abstract;
 using BookStore.Application.Abstract.Repositories;
 using BookStore.Application.Abstract.Services;
-using BookStore.Application.Mappings;
 using BookStore.Application.Services;
-using BookStore.Domain.Models.User;
-using BookStore.Infrastructure.Data;
 using BookStore.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +18,15 @@ namespace BookStore.Infrastructure.Extensions
 
             services.AddScoped<IAuthorRepository, AuthorRepository>();
             services.AddScoped<IAuthorService, AuthorService>();
+
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ICategoryService, CategoryService>();
+
+            services.AddScoped<IBookRepository, BookRepository>();
+            services.AddScoped<IBookService, BookService>();
+
+            services.AddScoped<IBookCategoryRepository, BookCategoryRepository>();
+            services.AddScoped<IBookAuthorRepository, BookAuthorRepository>();
 
             return services;
         }

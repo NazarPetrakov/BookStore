@@ -42,20 +42,6 @@ namespace BookStore.Infrastructure.Configurations
                 .HasMaxLength(1024)
                 .IsRequired(false);
 
-            builder
-                .HasMany(b => b.BookAuthors)
-                .WithOne(ba => ba.Book)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            builder
-                .HasMany(b => b.BookCategories)
-                .WithOne(bc => bc.Book)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            builder
-                .HasMany(b => b.BookUsers)
-                .WithOne(bu => bu.Book)
-                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

@@ -18,11 +18,6 @@ namespace BookStore.Infrastructure.Configurations
                 .Property(u => u.FullName)
                 .HasMaxLength(256)
                 .IsRequired(false);
-
-            builder
-                .HasMany(u => u.BookUsers)
-                .WithOne(bu => bu.User)
-                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

@@ -53,7 +53,7 @@ namespace BookStore.Api
         }
     }
 }
-//commit and push
-//add repo and services for other
+//continue service for book
+//(update put method)
 //add endpoint related with books for publisher and author
 //why include? in publisher repo

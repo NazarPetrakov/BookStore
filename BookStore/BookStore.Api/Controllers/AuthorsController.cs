@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using BookStore.Application.Abstract.Services;
 using BookStore.Application.Contracts.Author;
-using BookStore.Application.Contracts.Publisher;
-using BookStore.Application.Services;
 using BookStore.Domain.Models.Author;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,9 +32,9 @@ namespace BookStore.Api.Controllers
         {
             var authorEntity = _mapper.Map<Author>(createAuthor);
 
-            var isPublisherCreated = await _authorService.CreateAsync(authorEntity);
+            var isAuthorCreated = await _authorService.CreateAsync(authorEntity);
 
-            if (isPublisherCreated)
+            if (isAuthorCreated)
                 return CreatedAtAction("Create",
                     new { id = authorEntity.Id, Author = createAuthor });
             else

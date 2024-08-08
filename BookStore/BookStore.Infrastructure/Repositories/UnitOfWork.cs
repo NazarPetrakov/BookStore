@@ -11,13 +11,28 @@ namespace BookStore.Infrastructure.Repositories
 
         public IAuthorRepository AuthorRepository { get; }
 
+        public ICategoryRepository CategoryRepository { get; }
+        public IBookRepository BookRepository { get; }
+
+        public IBookCategoryRepository BookCategoryRepository { get; }
+
+        public IBookAuthorRepository BookAuthorRepository { get; }
+
         public UnitOfWork(AppDbContext dbContext,
-                            IPublisherRepository publisherRepository,
-                            IAuthorRepository authorRepository)
+                        IPublisherRepository publisherRepository,
+                        IAuthorRepository authorRepository,
+                        ICategoryRepository categoryRepository,
+                        IBookRepository bookRepository,
+                        IBookCategoryRepository bookCategoryRepository,
+                        IBookAuthorRepository bookAuthorRepository)
         {
             _dbContext = dbContext;
             PublisherRepository = publisherRepository;
             AuthorRepository = authorRepository;
+            CategoryRepository = categoryRepository;
+            BookRepository = bookRepository;
+            BookCategoryRepository = bookCategoryRepository;
+            BookAuthorRepository = bookAuthorRepository;
         }
 
         public void Dispose()

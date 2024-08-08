@@ -16,5 +16,9 @@ namespace BookStore.Infrastructure.Repositories
                 .Include(a => a.BookAuthors).ThenInclude(ba => ba.Book)
                 .FirstOrDefaultAsync();
         }
+        public async Task<IEnumerable<Author>> GetByIdsAsync(int[] ids)
+        {
+            return await _entities.Where(a => ids.Contains(a.Id)).ToListAsync();
+        }
     }
 }
