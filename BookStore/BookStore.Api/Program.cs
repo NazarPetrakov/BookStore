@@ -27,7 +27,6 @@ namespace BookStore.Api
             builder.Services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -54,7 +53,3 @@ namespace BookStore.Api
         }
     }
 }
-//continue service for book
-//(update put method)
-//add endpoint related with books for publisher and author
-//why include? in publisher repo

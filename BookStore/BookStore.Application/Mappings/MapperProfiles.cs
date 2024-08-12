@@ -30,8 +30,9 @@ namespace BookStore.Application.Mappings
             CreateMap<CreateBook, Book>()
                 .ForMember(dest => dest.PublicationYear, opt => opt.MapFrom(src => src.PublicationYear.ToDateTime(TimeOnly.MinValue)));
             CreateMap<Book, GetBook>()
-                .ForMember(dest => dest.PublicationYear, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.PublicationYear)));
-                //.ForMember(dest => dest.PublisherName, opt => opt.MapFrom(src => src.Publisher != null ? src.Publisher.Name : null));
+                .ForMember(dest => dest.PublicationYear, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.PublicationYear)))
+                .ForMember(dest => dest.Authors, opt => opt.MapFrom(src => src.BookAuthors.Select(ba => ba.Author)))
+                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.BookCategories.Select(bc => bc.Category)));
             CreateMap<UpdateBook, Book>()
                 .ForMember(dest => dest.PublicationYear, opt => opt.MapFrom(src => src.PublicationYear.ToDateTime(TimeOnly.MinValue))); ;
 

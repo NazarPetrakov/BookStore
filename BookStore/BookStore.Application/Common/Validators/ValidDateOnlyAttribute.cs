@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BookStore.Application.Validators
+namespace BookStore.Application.Common.Validators
 {
     public class ValidDateOnlyAttribute : ValidationAttribute
     {

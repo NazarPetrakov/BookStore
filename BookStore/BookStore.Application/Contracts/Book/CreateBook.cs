@@ -1,4 +1,4 @@
-﻿using BookStore.Application.Validators;
+﻿using BookStore.Application.Common.Validators;
 using System.ComponentModel.DataAnnotations;
 
 namespace BookStore.Application.Contracts.Book

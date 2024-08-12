@@ -72,19 +72,6 @@ namespace BookStore.Application.Services
 
             return SaveChangesAndCheckResult();
         }
-        public async Task<IEnumerable<Book>> GetBooksByCategoryAsync(int categoryId)
-        {
-            var entity = await UnitOfWork.CategoryRepository
-                .GetByIdAsync(categoryId);
-
-            if (entity == null)
-                throw new EntityNotFoundException("Category not found");
-
-            var books = await UnitOfWork.BookCategoryRepository
-                .GetBooksByCategoryIdAsync(categoryId);
-
-            return books!;
-        }
         private bool SaveChangesAndCheckResult()
         {
             var result = UnitOfWork.Save();

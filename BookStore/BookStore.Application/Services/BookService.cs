@@ -1,9 +1,10 @@
 ﻿using BookStore.Application.Abstract;
 using BookStore.Application.Abstract.Services;
+using BookStore.Application.Common.Specifications.Book;
 using BookStore.Domain.Exceptions;
 using BookStore.Domain.Models.Book;
+using BookStore.Domain.Models.Category;
 using BookStore.Domain.Models.JoinEntities;
-using BookStore.Domain.Models.Review;
 
 namespace BookStore.Application.Services
 {
@@ -75,25 +76,43 @@ namespace BookStore.Application.Services
 
         public async Task<IEnumerable<Book>> GetAllAsync()
         {
-            var entities = await UnitOfWork.BookRepository.GetAllAsync();
+            var spec = new DetailedBookSpec();
+
+            var entities = await UnitOfWork.BookRepository.GetAsync(spec);
 
             return entities;
         }
 
-        public Task<IEnumerable<Review>> GetBookReviews(int bookId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<Book> GetByIdAsync(int bookId)
         {
-            var entity = await UnitOfWork.BookRepository.GetByIdAsync(bookId);
+            var spec = new DetailedBookSpec(bookId);
+
+            var entity = await UnitOfWork.BookRepository.GetEntityWithSpec(spec);
 
             if (entity == null)
                 throw new EntityNotFoundException("Book not found");
 
             return entity;
         }
+        public async Task<IEnumerable<Book>> GetByAuthorAsync(int authorId)
+        {
+            var spec = new BooksByAuthorSpec(authorId);
+
+            return await UnitOfWork.BookRepository.GetAsync(spec);
+        }
+        public async Task<IEnumerable<Book>> GetByCategoryAsync(int categoryId)
+        {
+            var spec = new BooksByCategorySpec(categoryId);
+
+            return await UnitOfWork.BookRepository.GetAsync(spec);
+        }
+        public async Task<IEnumerable<Book>> GetByPublisherAsync(int publisherId)
+        {
+            var spec = new BooksByPublisherSpec(publisherId);
+
+            return await UnitOfWork.BookRepository.GetAsync(spec);
+        }
+
 
         public async Task<bool> UpdateAsync(Book book,
             int[]? categoryIds = null, int[]? authorIds = null, int? publisherId = null)
@@ -190,5 +209,7 @@ namespace BookStore.Application.Services
             var result = UnitOfWork.Save();
             return result > 0;
         }
+
+        
     }
 }

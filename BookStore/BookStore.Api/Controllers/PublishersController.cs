@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BookStore.Application.Abstract.Services;
-using BookStore.Application.Contracts.Book;
 using BookStore.Application.Contracts.Publisher;
 using BookStore.Domain.Models.Publisher;
 using Microsoft.AspNetCore.Mvc;
@@ -28,15 +27,6 @@ namespace BookStore.Api.Controllers
             var publisherList = _mapper.Map<IEnumerable<GetPublisher>>(entityList);
 
             return Ok(publisherList);
-        }
-        [HttpGet("{id}/books")]
-        public async Task<IActionResult> GetBooksByPublisherId(int id)
-        {
-            var entityList = await _publisherService.GetBooksByPublisherAsync(id);
-
-            var bookList = _mapper.Map<IEnumerable<GetBook>>(entityList);
-
-            return Ok(bookList);
         }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePublisher createPublisher)

@@ -2,8 +2,6 @@
 using BookStore.Application.Abstract.Services;
 using BookStore.Domain.Exceptions;
 using BookStore.Domain.Models.Author;
-using BookStore.Domain.Models.Book;
-using BookStore.Domain.Models.Category;
 
 namespace BookStore.Application.Services
 {
@@ -41,20 +39,6 @@ namespace BookStore.Application.Services
             var entities = await UnitOfWork.AuthorRepository.GetAllAsync();
 
             return entities;
-        }
-
-        public async Task<IEnumerable<Book>> GetBooksByAuthorAsync(int authorId)
-        {
-            var entity = await UnitOfWork.AuthorRepository
-                .GetByIdAsync(authorId);
-
-            if (entity == null)
-                throw new EntityNotFoundException("Author not found");
-
-            var books = await UnitOfWork.BookAuthorRepository
-                .GetBooksByAuthorIdAsync(authorId);
-
-            return books!;
         }
 
         public async Task<Author> GetByIdAsync(int authorId)

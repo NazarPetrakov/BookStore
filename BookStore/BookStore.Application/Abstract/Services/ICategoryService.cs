@@ -15,6 +15,5 @@ namespace BookStore.Application.Abstract.Services
         Task<bool> UpdateAsync(Category category);
 
         Task<bool> DeleteAsync(int categoryId);
-        Task<IEnumerable<Book>> GetBooksByCategoryAsync(int categoryId);
     }
 }

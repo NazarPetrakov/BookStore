@@ -72,17 +72,6 @@ namespace BookStore.Application.Services
 
             return SaveChangesAndCheckResult();
         }
-        public async Task<IEnumerable<Book>> GetBooksByPublisherAsync(int publisherId)
-        {
-            var entity = await UnitOfWork.PublisherRepository
-                .GetByIdAsync(publisherId);
-
-            if (entity == null)
-                throw new EntityNotFoundException("Publissher not found");
-
-            return await UnitOfWork.BookRepository
-                .GetBooksByPublisherIdAsync(publisherId);
-        }
         private bool SaveChangesAndCheckResult()
         {
             var result = UnitOfWork.Save();

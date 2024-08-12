@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BookStore.Application.Validators
+namespace BookStore.Application.Common.Validators
 {
     public class IsbnLengthAttribute : ValidationAttribute
     {
@@ -57,7 +57,7 @@ namespace BookStore.Application.Validators
                 sum += (isbn[i] - '0') * (i % 2 == 0 ? 1 : 3);
             }
 
-            int checksum = (10 - (sum % 10)) % 10;
+            int checksum = (10 - sum % 10) % 10;
             return checksum == isbn[12] - '0';
         }
     }

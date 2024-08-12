@@ -1,6 +1,4 @@
-﻿using BookStore.Domain.Models.Author;
-using BookStore.Domain.Models.Book;
-using BookStore.Domain.Models.Review;
+﻿using BookStore.Domain.Models.Book;
 
 namespace BookStore.Application.Abstract.Services
 {
@@ -15,6 +13,9 @@ namespace BookStore.Application.Abstract.Services
         Task<bool> UpdateAsync(Book book, int[]? categoryIds, int[]? authorIds, int? publisherId);
 
         Task<bool> DeleteAsync(int bookId);
-        Task<IEnumerable<Review>> GetBookReviews(int bookId);
+        Task<IEnumerable<Book>> GetByAuthorAsync(int authorId);
+        Task<IEnumerable<Book>> GetByCategoryAsync(int categoryId);
+        Task<IEnumerable<Book>> GetByPublisherAsync(int publisherId);
+
     }
 }

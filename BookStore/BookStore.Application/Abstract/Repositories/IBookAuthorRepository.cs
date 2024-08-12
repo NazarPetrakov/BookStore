@@ -8,6 +8,5 @@ namespace BookStore.Application.Abstract.Repositories
         Task<ICollection<BookAuthor>> GetAllAsync();
         void RemoveRange(IEnumerable<BookAuthor> entities);
         void AddRange(IEnumerable<BookAuthor> entities);
-        Task<ICollection<Book?>?> GetBooksByAuthorIdAsync(int authorId);
     }
 }

@@ -1,8 +1,8 @@
 ﻿using BookStore.Application.Abstract;
+using BookStore.Application.Common.Specifications;
 using BookStore.Domain.Models;
 using BookStore.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace BookStore.Infrastructure.Repositories
 {
@@ -25,17 +25,12 @@ namespace BookStore.Infrastructure.Repositories
             _entities.Remove(entity);
         }
 
-        public async Task<T> FindByConditionAsync(Expression<Func<T, bool>> predicate)
-        {
-            return await _entities.FirstOrDefaultAsync(predicate);
-        }
-
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _entities.ToListAsync();
         }
 
-        public virtual async Task<T?> GetByIdAsync(int id)
+        public async Task<T?> GetByIdAsync(int id)
         {
             return await _entities.FirstOrDefaultAsync(e => e.Id == id);
         }
@@ -43,6 +38,19 @@ namespace BookStore.Infrastructure.Repositories
         public  void Update(T entity)
         {
             _entities.Update(entity);
+        }
+
+        public async Task<List<T>> GetAsync(ISpecification<T> spec)
+        {
+            return await ApplySpecification(spec).ToListAsync();
+        }
+        public async Task<T?> GetEntityWithSpec(ISpecification<T> spec)
+        {
+            return await ApplySpecification(spec).FirstOrDefaultAsync();
+        }
+        private IQueryable<T> ApplySpecification(ISpecification<T> spec)
+        {
+            return SpecificationEvaluator<T>.GetQuery(_entities.AsQueryable(), spec);
         }
     }
 }

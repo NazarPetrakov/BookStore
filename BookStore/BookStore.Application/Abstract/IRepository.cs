@@ -1,5 +1,4 @@
 ﻿using BookStore.Domain.Models;
-using System.Linq.Expressions;
 
 namespace BookStore.Application.Abstract
 {
@@ -7,9 +6,10 @@ namespace BookStore.Application.Abstract
     {
         Task<IEnumerable<T>> GetAllAsync();
         Task<T?> GetByIdAsync(int id);
+        Task<List<T>> GetAsync(ISpecification<T> spec);
+        Task<T?> GetEntityWithSpec(ISpecification<T> spec);
         Task AddAsync(T entity);
         void Delete(T entity);
         void Update(T entity);
-        Task<T> FindByConditionAsync(Expression<Func<T, bool>> predicate);
     }
 }

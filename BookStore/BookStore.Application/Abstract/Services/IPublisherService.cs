@@ -1,5 +1,4 @@
-﻿using BookStore.Domain.Models.Book;
-using BookStore.Domain.Models.Publisher;
+﻿using BookStore.Domain.Models.Publisher;
 
 namespace BookStore.Application.Abstract.Services
 {
@@ -14,6 +13,5 @@ namespace BookStore.Application.Abstract.Services
         Task<bool> UpdateAsync(Publisher publisher);
 
         Task<bool> DeleteAsync(int publisherId);
-        Task<IEnumerable<Book>> GetBooksByPublisherAsync(int publisherId);
     }
 }

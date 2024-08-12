@@ -36,6 +36,33 @@ namespace BookStore.Api.Controllers
 
             return Ok(book);
         }
+        [HttpGet("by-author/{id}")]
+        public async Task<IActionResult> GetByAuthor(int id)
+        {
+            var entities = await _bookService.GetByAuthorAsync(id);
+
+            var books = _mapper.Map< ICollection<GetBook>>(entities);
+
+            return Ok(books);
+        }
+        [HttpGet("by-category/{id}")]
+        public async Task<IActionResult> GetByCategory(int id)
+        {
+            var entities = await _bookService.GetByCategoryAsync(id);
+
+            var books = _mapper.Map<ICollection<GetBook>>(entities);
+
+            return Ok(books);
+        }
+        [HttpGet("by-publisher/{id}")]
+        public async Task<IActionResult> GetByPublisher(int id)
+        {
+            var entities = await _bookService.GetByPublisherAsync(id);
+
+            var books = _mapper.Map<ICollection<GetBook>>(entities);
+
+            return Ok(books);
+        }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
