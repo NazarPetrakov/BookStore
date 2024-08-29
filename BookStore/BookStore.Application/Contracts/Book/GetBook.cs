@@ -1,5 +1,4 @@
-﻿
-using BookStore.Application.Contracts.Author;
+﻿using BookStore.Application.Contracts.Author;
 using BookStore.Application.Contracts.Category;
 using BookStore.Application.Contracts.Publisher;
 

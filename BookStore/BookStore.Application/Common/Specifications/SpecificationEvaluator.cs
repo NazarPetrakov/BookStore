@@ -21,6 +21,11 @@ namespace BookStore.Application.Common.Specifications
                 query = spec.Includes.Aggregate(query, (current, include) => include(current));
             }
 
+            if(spec.OrderBy != null)
+            {
+                query = query.OrderBy(spec.OrderBy);
+            }
+
             return query;
         }
     }

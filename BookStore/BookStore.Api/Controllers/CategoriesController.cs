@@ -3,6 +3,7 @@ using BookStore.Application.Abstract.Services;
 using BookStore.Application.Contracts.Category;
 using BookStore.Domain.Models.Category;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace BookStore.Api.Controllers
 {
@@ -19,9 +20,21 @@ namespace BookStore.Api.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] CategoryParameters parameters)
         {
-            var entities = await _categoryService.GetAllAsync();
+            var entities = await _categoryService.GetPagedListAsync(parameters);
+
+            var metadata = new
+            {
+                entities.TotalCount,
+                entities.PageSize,
+                entities.CurrentPage,
+                entities.TotalPages,
+                entities.HasNext,
+                entities.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
             var categories = _mapper.Map<ICollection<GetCategory>>(entities);
 

@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using BookStore.Application.Abstract.Services;
 using BookStore.Application.Contracts.Author;
+using BookStore.Application.Services;
 using BookStore.Domain.Models.Author;
+using BookStore.Domain.Models.Category;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace BookStore.Api.Controllers
 {
@@ -19,9 +22,21 @@ namespace BookStore.Api.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] AuthorParameters parameters)
         {
-            var entities = await _authorService.GetAllAsync();
+            var entities = await _authorService.GetPagedListAsync(parameters);
+
+            var metadata = new
+            {
+                entities.TotalCount,
+                entities.PageSize,
+                entities.CurrentPage,
+                entities.TotalPages,
+                entities.HasNext,
+                entities.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
             var authors = _mapper.Map<ICollection<GetAuthor>>(entities);
 

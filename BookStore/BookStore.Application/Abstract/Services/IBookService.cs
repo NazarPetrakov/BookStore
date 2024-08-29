@@ -1,4 +1,5 @@
-﻿using BookStore.Domain.Models.Book;
+﻿using BookStore.Domain.Common.Pagination;
+using BookStore.Domain.Models.Book;
 
 namespace BookStore.Application.Abstract.Services
 {
@@ -7,6 +8,7 @@ namespace BookStore.Application.Abstract.Services
         Task<bool> CreateAsync(Book book, int[] categoryIds, int[] authorIds, int? publisherId);
 
         Task<IEnumerable<Book>> GetAllAsync();
+        Task<PagedList<Book>> GetPagedListAsync(BookParameters parameters);
 
         Task<Book> GetByIdAsync(int bookId);
 

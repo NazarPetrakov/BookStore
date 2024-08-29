@@ -1,8 +1,12 @@
 ﻿using BookStore.Application.Abstract;
 using BookStore.Application.Abstract.Services;
+using BookStore.Application.Common.Specifications;
+using BookStore.Domain.Common.Pagination;
 using BookStore.Domain.Exceptions;
 using BookStore.Domain.Models.Book;
+using BookStore.Domain.Models.Category;
 using BookStore.Domain.Models.Publisher;
+using BookStore.Application.Common.Specifications.Publisher;
 
 namespace BookStore.Application.Services
 {
@@ -42,7 +46,33 @@ namespace BookStore.Application.Services
 
             return publisherList;
         }
+        public async Task<PagedList<Publisher>> GetPagedListAsync(PublisherParameters parameters)
+        {
+            BaseSpecification<Publisher> spec = new PublisherOrderedByIdSpec();
 
+            if (!string.IsNullOrEmpty(parameters.OrderBy))
+            {
+                spec = parameters.OrderBy.ToLower() switch
+                {
+                    "name" => new PublisherOrderedByNameSpec(),
+                    _ => new PublisherOrderedByIdSpec()
+                };
+            }
+
+            var entities = await UnitOfWork.PublisherRepository.GetAsync(spec);
+            var query = entities.AsQueryable();
+
+            if (!string.IsNullOrEmpty(parameters.SearchTerm))
+            {
+                query = query.Where(c => c.Name.Contains(parameters.SearchTerm));
+            }
+
+            var result = PagedList<Publisher>.ToPagedList(query,
+                parameters.PageNumber,
+                parameters.PageSize);
+
+            return result;
+        }
         public async Task<Publisher> GetByIdAsync(int publisherId)
         {
             var publisher = await UnitOfWork.PublisherRepository
@@ -77,6 +107,7 @@ namespace BookStore.Application.Services
             var result = UnitOfWork.Save();
             return result > 0;
         }
+
         
     }
 }

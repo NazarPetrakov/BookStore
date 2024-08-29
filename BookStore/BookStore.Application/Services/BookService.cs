@@ -1,9 +1,9 @@
 ﻿using BookStore.Application.Abstract;
 using BookStore.Application.Abstract.Services;
 using BookStore.Application.Common.Specifications.Book;
+using BookStore.Domain.Common.Pagination;
 using BookStore.Domain.Exceptions;
 using BookStore.Domain.Models.Book;
-using BookStore.Domain.Models.Category;
 using BookStore.Domain.Models.JoinEntities;
 
 namespace BookStore.Application.Services
@@ -82,7 +82,44 @@ namespace BookStore.Application.Services
 
             return entities;
         }
+        public async Task<PagedList<Book>> GetPagedListAsync(BookParameters parameters)
+        {
+            BookSpec spec = new DetailedBookSpec();
 
+            if (!string.IsNullOrEmpty(parameters.OrderBy))
+            {
+                spec = parameters.OrderBy.ToLower() switch
+                {
+                    "title" => new BookOrderedByTitleSpec(),
+                    "price" => new BookOrderedByPriceSpec(),
+                    "year" or "publicationyear" or "date" or "publicationdate" 
+                        => new BookOrderedByPublicationYearSpec(),
+                    _ => new DetailedBookSpec()
+                };
+            }
+
+            var books = await UnitOfWork.BookRepository.GetAsync(spec);
+            var query = books.AsQueryable();
+
+            if (!string.IsNullOrEmpty(parameters.SearchTerm))
+            {
+                query = query.Where(b => b.Title.Contains(parameters.SearchTerm)
+                    || b.ISBN.Contains(parameters.SearchTerm));
+            }
+
+            if (parameters.MinPrice <= parameters.MaxPrice)
+            {
+                query = query.Where(b => b.Price >= parameters.MinPrice && b.Price <= parameters.MaxPrice);
+            }
+
+            if (parameters.MinPublicationYear <= parameters.MaxPublicationYear)
+            {
+                query = query.Where(b => b.PublicationYear >= parameters.MinPublicationYear
+                    && b.PublicationYear <= parameters.MaxPublicationYear);
+            }
+
+            return PagedList<Book>.ToPagedList(query, parameters.PageNumber, parameters.PageSize);
+        }
         public async Task<Book> GetByIdAsync(int bookId)
         {
             var spec = new DetailedBookSpec(bookId);
@@ -210,6 +247,6 @@ namespace BookStore.Application.Services
             return result > 0;
         }
 
-        
+
     }
 }

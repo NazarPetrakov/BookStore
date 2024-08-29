@@ -3,9 +3,9 @@ using System.Linq.Expressions;
 
 namespace BookStore.Application.Common.Specifications.Book
 {
-    public abstract class BookSpec<T> : BaseSpecification<T> where T : Domain.Models.Book.Book
+    public abstract class BookSpec : BaseSpecification<Domain.Models.Book.Book>
     {
-        protected BookSpec (Expression<Func<T, bool>> criteria) : base(criteria)
+        protected BookSpec (Expression<Func<Domain.Models.Book.Book, bool>> criteria) : base(criteria)
         {
             AddCommonIncludes();
         }

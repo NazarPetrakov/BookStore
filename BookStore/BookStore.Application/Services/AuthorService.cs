@@ -1,7 +1,10 @@
 ﻿using BookStore.Application.Abstract;
 using BookStore.Application.Abstract.Services;
+using BookStore.Application.Common.Specifications;
+using BookStore.Domain.Common.Pagination;
 using BookStore.Domain.Exceptions;
 using BookStore.Domain.Models.Author;
+using BookStore.Application.Common.Specifications.Author;
 
 namespace BookStore.Application.Services
 {
@@ -39,6 +42,34 @@ namespace BookStore.Application.Services
             var entities = await UnitOfWork.AuthorRepository.GetAllAsync();
 
             return entities;
+        }
+        public async Task<PagedList<Author>> GetPagedListAsync(AuthorParameters parameters)
+        {
+            BaseSpecification<Author> spec = new AuthorOrderedByIdSpec();
+
+            if (!string.IsNullOrEmpty(parameters.OrderBy))
+            {
+                spec = parameters.OrderBy.ToLower() switch
+                {
+                    "firstname" => new AuthorOrderedByFirstNameSpec(),
+                    "lastname" => new AuthorOrderedByLastNameSpec(),
+                    _ => new AuthorOrderedByIdSpec()
+                };
+            }
+
+            var entities = await UnitOfWork.AuthorRepository.GetAsync(spec);
+            var query = entities.AsQueryable();
+
+            if (!string.IsNullOrEmpty(parameters.SearchTerm))
+            {
+                query = query.Where(c => c.LastName.Contains(parameters.SearchTerm));
+            }
+
+            var result = PagedList<Author>.ToPagedList(query,
+                parameters.PageNumber,
+                parameters.PageSize);
+
+            return result;
         }
 
         public async Task<Author> GetByIdAsync(int authorId)
