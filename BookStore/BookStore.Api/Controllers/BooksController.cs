@@ -2,6 +2,7 @@
 using BookStore.Application.Abstract.Services;
 using BookStore.Application.Common.Identity;
 using BookStore.Application.Contracts.Book;
+using BookStore.Domain.Common.Pagination;
 using BookStore.Domain.Models.Book;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -27,23 +28,7 @@ namespace BookStore.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] BookParameters parameters)
         {
-            var entities = await _bookService.GetPagedListAsync(parameters);
-
-            var metadata = new
-            {
-                entities.TotalCount,
-                entities.PageSize,
-                entities.CurrentPage,
-                entities.TotalPages,
-                entities.HasNext,
-                entities.HasPrevious
-            };
-
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-
-            var books = _mapper.Map<ICollection<GetBook>>(entities);
-
-            return Ok(books);
+            return await GetBooksAsync(() => _bookService.GetPagedListAsync(parameters));
         }
 
         [HttpGet("{id}")]
@@ -59,35 +44,23 @@ namespace BookStore.Api.Controllers
 
         [HttpGet("by-author/{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetByAuthor(int id)
+        public async Task<IActionResult> GetByAuthor(int id, [FromQuery]BookParameters parameters)
         {
-            var entities = await _bookService.GetByAuthorAsync(id);
-
-            var books = _mapper.Map< ICollection<GetBook>>(entities);
-
-            return Ok(books);
+            return await GetBooksAsync(() => _bookService.GetByAuthorPagedListAsync(id, parameters));
         }
 
         [HttpGet("by-category/{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetByCategory(int id)
+        public async Task<IActionResult> GetByCategory(int id, [FromQuery] BookParameters parameters)
         {
-            var entities = await _bookService.GetByCategoryAsync(id);
-
-            var books = _mapper.Map<ICollection<GetBook>>(entities);
-
-            return Ok(books);
+            return await GetBooksAsync(() => _bookService.GetByCategoryPagedListAsync(id, parameters));
         }
 
         [HttpGet("by-publisher/{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetByPublisher(int id)
+        public async Task<IActionResult> GetByPublisher(int id, [FromQuery] BookParameters parameters)
         {
-            var entities = await _bookService.GetByPublisherAsync(id);
-
-            var books = _mapper.Map<ICollection<GetBook>>(entities);
-
-            return Ok(books);
+            return await GetBooksAsync(() => _bookService.GetByPublisherPagedListAsync(id, parameters));
         }
 
         [HttpDelete("{id}")]
@@ -133,6 +106,25 @@ namespace BookStore.Api.Controllers
             else
                 return BadRequest();
         }
+        private async Task<IActionResult> GetBooksAsync(Func<Task<PagedList<Book>>> getBooksFunc)
+        {
+            var entities = await getBooksFunc();
 
+            var metadata = new
+            {
+                entities.TotalCount,
+                entities.PageSize,
+                entities.CurrentPage,
+                entities.TotalPages,
+                entities.HasNext,
+                entities.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            var books = _mapper.Map<ICollection<GetBook>>(entities);
+
+            return Ok(books);
+        }
     }
 }
