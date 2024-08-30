@@ -1,6 +1,6 @@
 ﻿namespace BookStore.Domain.Models.JoinEntities
 {
-    public class BookUser : BaseEntity
+    public class BookUser
     {
         public int? BookId { get; set; }
         public Book.Book? Book { get; set; }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using BookStore.Domain.Models.JoinEntities;
 
 namespace BookStore.Infrastructure.Data
 {
@@ -21,6 +22,11 @@ namespace BookStore.Infrastructure.Data
         public DbSet<Publisher> Publishers { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Review> Reviews { get; set; }
+
+        public DbSet<BookAuthor> BookAuthors { get; set; }
+        public DbSet<BookCategory> BookCategories { get; set; }
+        public DbSet<BookUser> BookUsers { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

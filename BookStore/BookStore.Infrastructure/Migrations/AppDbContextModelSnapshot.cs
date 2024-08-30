@@ -109,71 +109,47 @@ namespace BookStore.Infrastructure.Migrations
 
             modelBuilder.Entity("BookStore.Domain.Models.JoinEntities.BookAuthor", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int?>("BookId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int?>("AuthorId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BookId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
+                    b.HasKey("BookId", "AuthorId");
 
                     b.HasIndex("AuthorId");
 
-                    b.HasIndex("BookId");
-
-                    b.ToTable("BookAuthor");
+                    b.ToTable("BookAuthors");
                 });
 
             modelBuilder.Entity("BookStore.Domain.Models.JoinEntities.BookCategory", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
                     b.Property<int?>("BookId")
                         .HasColumnType("int");
 
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
+                    b.HasKey("BookId", "CategoryId");
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("BookCategory");
+                    b.ToTable("BookCategories");
                 });
 
             modelBuilder.Entity("BookStore.Domain.Models.JoinEntities.BookUser", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
                     b.Property<int?>("BookId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
+                    b.HasKey("BookId", "UserId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BookUser");
+                    b.ToTable("BookUsers");
                 });
 
             modelBuilder.Entity("BookStore.Domain.Models.Publisher.Publisher", b =>
@@ -451,12 +427,14 @@ namespace BookStore.Infrastructure.Migrations
                     b.HasOne("BookStore.Domain.Models.Author.Author", "Author")
                         .WithMany("BookAuthors")
                         .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BookStore.Domain.Models.Book.Book", "Book")
                         .WithMany("BookAuthors")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Author");
 
@@ -468,12 +446,14 @@ namespace BookStore.Infrastructure.Migrations
                     b.HasOne("BookStore.Domain.Models.Book.Book", "Book")
                         .WithMany("BookCategories")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BookStore.Domain.Models.Category.Category", "Category")
                         .WithMany("BookCategories")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Book");
 
@@ -485,12 +465,14 @@ namespace BookStore.Infrastructure.Migrations
                     b.HasOne("BookStore.Domain.Models.Book.Book", "Book")
                         .WithMany("BookUsers")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BookStore.Domain.Models.User.ApplicationUser", "User")
                         .WithMany("BookUsers")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Book");
 

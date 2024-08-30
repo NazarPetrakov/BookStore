@@ -9,18 +9,18 @@ namespace BookStore.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<Review> builder)
         {
             builder
-                .Property(e => e.Rating)
+                .Property(r => r.Rating)
                 .IsRequired();
             builder
                 .HasCheckConstraint("CK_Review_Rating_Range", "Rating BETWEEN 1 AND 10");
 
             builder
-                .Property(e => e.Comment)
+                .Property(r => r.Comment)
                 .HasMaxLength(1024)
                 .IsRequired(false);
 
             builder
-                .Property(e => e.ReviewDate)
+                .Property(r => r.ReviewDate)
                 .HasColumnType("datetime")
                 .IsRequired();
         }

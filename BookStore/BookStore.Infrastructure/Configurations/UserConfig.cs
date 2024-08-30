@@ -9,20 +9,15 @@ namespace BookStore.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
             builder
-                .HasMany(e => e.Reviews)
-                .WithOne(e => e.User)
-                .HasForeignKey(e => e.UserId)
+                .HasMany(u => u.Reviews)
+                .WithOne(r => r.User)
+                .HasForeignKey(r => r.UserId)
                 .IsRequired();
 
             builder
-                .Property(e => e.FullName)
+                .Property(u => u.FullName)
                 .HasMaxLength(256)
                 .IsRequired(false);
-
-            builder
-                .HasMany(e => e.BookUsers)
-                .WithOne(e => e.User)
-                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
