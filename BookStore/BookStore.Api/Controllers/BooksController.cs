@@ -1,12 +1,16 @@
 ﻿using AutoMapper;
 using BookStore.Application.Abstract.Services;
+using BookStore.Application.Common.Identity;
 using BookStore.Application.Contracts.Book;
 using BookStore.Domain.Models.Book;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace BookStore.Api.Controllers
 {
+    [Authorize(Roles = UserRoles.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/v1/books")]
     [ApiController]
     public class BooksController : ControllerBase
@@ -20,6 +24,7 @@ namespace BookStore.Api.Controllers
             _mapper = mapper;
         }
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] BookParameters parameters)
         {
             var entities = await _bookService.GetPagedListAsync(parameters);
@@ -40,7 +45,9 @@ namespace BookStore.Api.Controllers
 
             return Ok(books);
         }
+
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var entity = await _bookService.GetByIdAsync(id);
@@ -49,7 +56,9 @@ namespace BookStore.Api.Controllers
 
             return Ok(book);
         }
+
         [HttpGet("by-author/{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetByAuthor(int id)
         {
             var entities = await _bookService.GetByAuthorAsync(id);
@@ -58,7 +67,9 @@ namespace BookStore.Api.Controllers
 
             return Ok(books);
         }
+
         [HttpGet("by-category/{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetByCategory(int id)
         {
             var entities = await _bookService.GetByCategoryAsync(id);
@@ -67,7 +78,9 @@ namespace BookStore.Api.Controllers
 
             return Ok(books);
         }
+
         [HttpGet("by-publisher/{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetByPublisher(int id)
         {
             var entities = await _bookService.GetByPublisherAsync(id);
@@ -76,6 +89,7 @@ namespace BookStore.Api.Controllers
 
             return Ok(books);
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -86,6 +100,7 @@ namespace BookStore.Api.Controllers
             else
                 return BadRequest();
         }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateBook createBook)
         {
@@ -101,6 +116,7 @@ namespace BookStore.Api.Controllers
             else
                 return BadRequest();
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateBook updateBook)
         {

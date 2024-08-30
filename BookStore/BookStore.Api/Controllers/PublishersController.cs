@@ -1,13 +1,16 @@
 ﻿using AutoMapper;
 using BookStore.Application.Abstract.Services;
+using BookStore.Application.Common.Identity;
 using BookStore.Application.Contracts.Publisher;
-using BookStore.Application.Services;
 using BookStore.Domain.Models.Publisher;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace BookStore.Api.Controllers
 {
+    [Authorize(Roles = UserRoles.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/v1/publishers")]
     [ApiController]
 
@@ -22,6 +25,7 @@ namespace BookStore.Api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery]PublisherParameters parameters)
         {
             var entities = await _publisherService.GetPagedListAsync(parameters);
@@ -42,6 +46,18 @@ namespace BookStore.Api.Controllers
 
             return Ok(publisherList);
         }
+
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var entity = await _publisherService.GetByIdAsync(id);
+
+            var publisher = _mapper.Map<GetPublisher>(entity);
+
+            return Ok(publisher);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePublisher createPublisher)
         {
@@ -55,15 +71,7 @@ namespace BookStore.Api.Controllers
             else
                 return BadRequest();
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var entity = await _publisherService.GetByIdAsync(id);
-
-            var publisher = _mapper.Map<GetPublisher>(entity);
-
-            return Ok(publisher);
-        }
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -74,6 +82,7 @@ namespace BookStore.Api.Controllers
             else
                 return BadRequest();
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdatePublisher updatePublisher)
         {

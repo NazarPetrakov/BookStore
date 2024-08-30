@@ -1,14 +1,16 @@
 ﻿using AutoMapper;
 using BookStore.Application.Abstract.Services;
+using BookStore.Application.Common.Identity;
 using BookStore.Application.Contracts.Author;
-using BookStore.Application.Services;
 using BookStore.Domain.Models.Author;
-using BookStore.Domain.Models.Category;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace BookStore.Api.Controllers
 {
+    [Authorize(Roles = UserRoles.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/v1/authors")]
     [ApiController]
     public class AuthorsController : ControllerBase
@@ -22,6 +24,7 @@ namespace BookStore.Api.Controllers
             _mapper = mapper;
         }
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] AuthorParameters parameters)
         {
             var entities = await _authorService.GetPagedListAsync(parameters);
@@ -42,6 +45,18 @@ namespace BookStore.Api.Controllers
 
             return Ok(authors);
         }
+
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var entity = await _authorService.GetByIdAsync(id);
+
+            var author = _mapper.Map<GetAuthor>(entity);
+
+            return Ok(author);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody]CreateAuthor createAuthor)
         {
@@ -55,15 +70,7 @@ namespace BookStore.Api.Controllers
             else
                 return BadRequest();
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var entity = await _authorService.GetByIdAsync(id);
-
-            var author = _mapper.Map<GetAuthor>(entity);
-
-            return Ok(author);
-        }
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -74,6 +81,7 @@ namespace BookStore.Api.Controllers
             else
                 return BadRequest();
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateAuthor updateAuthor)
         {

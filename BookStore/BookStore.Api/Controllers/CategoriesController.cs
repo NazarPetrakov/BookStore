@@ -1,12 +1,16 @@
 ﻿using AutoMapper;
 using BookStore.Application.Abstract.Services;
+using BookStore.Application.Common.Identity;
 using BookStore.Application.Contracts.Category;
 using BookStore.Domain.Models.Category;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace BookStore.Api.Controllers
 {
+    [Authorize(Roles = UserRoles.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/v1/categories")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -19,7 +23,9 @@ namespace BookStore.Api.Controllers
             _categoryService = categoryService;
             _mapper = mapper;
         }
+
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] CategoryParameters parameters)
         {
             var entities = await _categoryService.GetPagedListAsync(parameters);
@@ -40,6 +46,18 @@ namespace BookStore.Api.Controllers
 
             return Ok(categories);
         }
+
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var entity = await _categoryService.GetByIdAsync(id);
+
+            var category = _mapper.Map<GetCategory>(entity);
+
+            return Ok(category);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCategory createCategory)
         {
@@ -53,15 +71,7 @@ namespace BookStore.Api.Controllers
             else
                 return BadRequest();
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var entity = await _categoryService.GetByIdAsync(id);
-
-            var category = _mapper.Map<GetCategory>(entity);
-
-            return Ok(category);
-        }
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -72,6 +82,7 @@ namespace BookStore.Api.Controllers
             else
                 return BadRequest();
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateCategory updateCategory)
         {
