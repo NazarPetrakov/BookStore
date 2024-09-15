@@ -3,10 +3,14 @@ using BookStore.Application.Contracts.Author;
 using BookStore.Application.Contracts.Book;
 using BookStore.Application.Contracts.Category;
 using BookStore.Application.Contracts.Publisher;
+using BookStore.Application.Contracts.Review;
+using BookStore.Application.Contracts.User;
 using BookStore.Domain.Models.Author;
 using BookStore.Domain.Models.Book;
 using BookStore.Domain.Models.Category;
 using BookStore.Domain.Models.Publisher;
+using BookStore.Domain.Models.Review;
+using BookStore.Domain.Models.User;
 
 namespace BookStore.Application.Mappings
 {
@@ -36,6 +40,10 @@ namespace BookStore.Application.Mappings
             CreateMap<UpdateBook, Book>()
                 .ForMember(dest => dest.PublicationYear, opt => opt.MapFrom(src => src.PublicationYear.ToDateTime(TimeOnly.MinValue))); ;
 
+            CreateMap<ApplicationUser, GetUser>().ReverseMap();
+
+            CreateMap<CreateReview, Review>().ReverseMap();
+            CreateMap<Review, GetReview>().ReverseMap();
         }
     }
 }

@@ -17,6 +17,7 @@ namespace BookStore.Infrastructure.Repositories
         public IBookCategoryRepository BookCategoryRepository { get; }
 
         public IBookAuthorRepository BookAuthorRepository { get; }
+        public IReviewRepository ReviewRepository { get; }
 
         public UnitOfWork(AppDbContext dbContext,
                         IPublisherRepository publisherRepository,
@@ -24,7 +25,8 @@ namespace BookStore.Infrastructure.Repositories
                         ICategoryRepository categoryRepository,
                         IBookRepository bookRepository,
                         IBookCategoryRepository bookCategoryRepository,
-                        IBookAuthorRepository bookAuthorRepository)
+                        IBookAuthorRepository bookAuthorRepository,
+                        IReviewRepository reviewRepository)
         {
             _dbContext = dbContext;
             PublisherRepository = publisherRepository;
@@ -33,6 +35,7 @@ namespace BookStore.Infrastructure.Repositories
             BookRepository = bookRepository;
             BookCategoryRepository = bookCategoryRepository;
             BookAuthorRepository = bookAuthorRepository;
+            ReviewRepository = reviewRepository;
         }
 
         public void Dispose()

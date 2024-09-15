@@ -1,12 +1,8 @@
 ﻿using BookStore.Application.Abstract;
 using BookStore.Application.Abstract.Services;
-using BookStore.Application.Common.Specifications;
 using BookStore.Domain.Common.Pagination;
 using BookStore.Domain.Exceptions;
-using BookStore.Domain.Models.Book;
-using BookStore.Domain.Models.Category;
 using BookStore.Domain.Models.Publisher;
-using BookStore.Application.Common.Specifications.Publisher;
 
 namespace BookStore.Application.Services
 {
@@ -33,7 +29,7 @@ namespace BookStore.Application.Services
                 .GetByIdAsync(publisherId);
 
             if (publisher == null)
-                throw new EntityNotFoundException("Publissher not found");
+                throw new EntityNotFoundException("Publisher not found");
 
             UnitOfWork.PublisherRepository.Delete(publisher);
 
@@ -48,24 +44,19 @@ namespace BookStore.Application.Services
         }
         public async Task<PagedList<Publisher>> GetPagedListAsync(PublisherParameters parameters)
         {
-            BaseSpecification<Publisher> spec = new PublisherOrderedByIdSpec();
-
-            if (!string.IsNullOrEmpty(parameters.OrderBy))
-            {
-                spec = parameters.OrderBy.ToLower() switch
-                {
-                    "name" => new PublisherOrderedByNameSpec(),
-                    _ => new PublisherOrderedByIdSpec()
-                };
-            }
-
-            var entities = await UnitOfWork.PublisherRepository.GetAsync(spec);
+            var entities = await UnitOfWork.PublisherRepository.GetAllAsync();
             var query = entities.AsQueryable();
 
             if (!string.IsNullOrEmpty(parameters.SearchTerm))
             {
-                query = query.Where(c => c.Name.Contains(parameters.SearchTerm));
+                query = query.Where(p => p.Name.Contains(parameters.SearchTerm));
             }
+
+            query = parameters.OrderBy?.ToLower() switch
+            {
+                "name" => query.OrderBy(p => p.Name),
+                _ => query.OrderBy(p => p.Id)
+            };
 
             var result = PagedList<Publisher>.ToPagedList(query,
                 parameters.PageNumber,
@@ -79,7 +70,7 @@ namespace BookStore.Application.Services
                 .GetByIdAsync(publisherId);
 
             if (publisher == null)
-                throw new EntityNotFoundException("Publissher not found");
+                throw new EntityNotFoundException("Publisher not found");
 
             return publisher;
         }
@@ -93,7 +84,7 @@ namespace BookStore.Application.Services
                 .GetByIdAsync(publisher.Id);
 
             if (entity == null)
-                throw new EntityNotFoundException("Publissher not found");
+                throw new EntityNotFoundException("Publisher not found");
 
             entity.Name = publisher.Name ?? entity.Name;
             entity.Address = publisher.Address ?? entity.Address;

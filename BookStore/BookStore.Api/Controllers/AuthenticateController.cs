@@ -22,7 +22,6 @@ namespace BookStore.Api.Controllers
             var response = await _authenticateService.LoginAsync(model);
             if (response.Status == "Error")
                 return Unauthorized(response.Message);
-
             return Ok(new
             {
                 token = response.Token,

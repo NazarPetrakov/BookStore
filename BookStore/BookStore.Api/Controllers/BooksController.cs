@@ -2,27 +2,34 @@
 using BookStore.Application.Abstract.Services;
 using BookStore.Application.Common.Identity;
 using BookStore.Application.Contracts.Book;
+using BookStore.Application.Contracts.Review;
 using BookStore.Domain.Common.Pagination;
 using BookStore.Domain.Models.Book;
+using BookStore.Domain.Models.Review;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Security.Claims;
 
 namespace BookStore.Api.Controllers
 {
-    [Authorize(Roles = UserRoles.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/v1/books")]
     [ApiController]
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
+        private readonly IReviewService _reviewService;
         private readonly IMapper _mapper;
 
-        public BooksController(IBookService bookService, IMapper mapper)
+        public BooksController(
+            IBookService bookService,
+            IReviewService reviewService,
+            IMapper mapper)
         {
             _bookService = bookService;
             _mapper = mapper;
+            _reviewService = reviewService;
         }
         [HttpGet]
         [AllowAnonymous]
@@ -63,6 +70,7 @@ namespace BookStore.Api.Controllers
             return await GetBooksAsync(() => _bookService.GetByPublisherPagedListAsync(id, parameters));
         }
 
+        [Authorize(Roles = UserRoles.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -74,6 +82,7 @@ namespace BookStore.Api.Controllers
                 return BadRequest();
         }
 
+        [Authorize(Roles = UserRoles.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateBook createBook)
         {
@@ -90,6 +99,25 @@ namespace BookStore.Api.Controllers
                 return BadRequest();
         }
 
+        [Authorize(Roles = UserRoles.User, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("{id}/reviews")]
+        public async Task<IActionResult> CreateReview([FromBody] CreateReview createReview, int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var reviewEntity = _mapper.Map<Review>(createReview);
+
+            var isReviewCreated = await _reviewService
+                .CreateAsync(reviewEntity, id, userId);
+
+            if (isReviewCreated)
+                return CreatedAtAction("Create",
+                    new { id = reviewEntity.Id, Review = createReview });
+            else
+                return BadRequest();
+        }
+
+        [Authorize(Roles = UserRoles.Admin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateBook updateBook)
         {

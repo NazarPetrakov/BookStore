@@ -10,6 +10,7 @@ namespace BookStore.Application.Abstract
         IBookRepository BookRepository { get; }
         IBookCategoryRepository BookCategoryRepository { get; }
         IBookAuthorRepository BookAuthorRepository { get; }
+        IReviewRepository ReviewRepository { get; }
 
         int Save();
     }
