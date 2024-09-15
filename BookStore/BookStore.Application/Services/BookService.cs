@@ -15,6 +15,50 @@ namespace BookStore.Application.Services
         {
             UnitOfWork = unitOfWork;
         }
+        
+        public async Task<IEnumerable<Book>> GetAllAsync()
+        {
+            var spec = new DetailedBookSpec();
+
+            var entities = await UnitOfWork.BookRepository.GetAsync(spec);
+
+            return entities;
+        }
+        public async Task<Book> GetByIdAsync(int bookId)
+        {
+            var spec = new DetailedBookSpec(bookId);
+
+            var entity = await UnitOfWork.BookRepository.GetEntityWithSpec(spec);
+
+            if (entity == null)
+                throw new EntityNotFoundException("Book not found");
+
+            return entity;
+        }
+        public Task<PagedList<Book>> GetPagedListAsync(BookParameters parameters)
+        {
+            var spec = new DetailedBookSpec();
+            return GetBooksBySpecAsync(spec, parameters);
+        }
+
+        public async Task<PagedList<Book>> GetByAuthorPagedListAsync(int authorId, BookParameters parameters)
+        {
+            var spec = new BooksByAuthorSpec(authorId);
+            return await GetBooksBySpecAsync(spec, parameters);
+        }
+
+        public async Task<PagedList<Book>> GetByCategoryPagedListAsync(int categoryId, BookParameters parameters)
+        {
+            var spec = new BooksByCategorySpec(categoryId);
+            return await GetBooksBySpecAsync(spec, parameters);
+        }
+
+        public async Task<PagedList<Book>> GetByPublisherPagedListAsync(int publisherId, BookParameters parameters)
+        {
+            var spec = new BooksByPublisherSpec(publisherId);
+            return await GetBooksBySpecAsync(spec, parameters);
+        }
+       
         public async Task<bool> CreateAsync(Book book,
             int[] categoryIds, int[] authorIds, int? publisherId)
         {
@@ -73,84 +117,6 @@ namespace BookStore.Application.Services
 
             return SaveChangesAndCheckResult();
         }
-
-        public async Task<IEnumerable<Book>> GetAllAsync()
-        {
-            var spec = new DetailedBookSpec();
-
-            var entities = await UnitOfWork.BookRepository.GetAsync(spec);
-
-            return entities;
-        }
-        public async Task<PagedList<Book>> GetPagedListAsync(BookParameters parameters)
-        {
-            BookSpec spec = new DetailedBookSpec();
-
-            if (!string.IsNullOrEmpty(parameters.OrderBy))
-            {
-                spec = parameters.OrderBy.ToLower() switch
-                {
-                    "title" => new BookOrderedByTitleSpec(),
-                    "price" => new BookOrderedByPriceSpec(),
-                    "year" or "publicationyear" or "date" or "publicationdate" 
-                        => new BookOrderedByPublicationYearSpec(),
-                    _ => new DetailedBookSpec()
-                };
-            }
-
-            var books = await UnitOfWork.BookRepository.GetAsync(spec);
-            var query = books.AsQueryable();
-
-            if (!string.IsNullOrEmpty(parameters.SearchTerm))
-            {
-                query = query.Where(b => b.Title.Contains(parameters.SearchTerm)
-                    || b.ISBN.Contains(parameters.SearchTerm));
-            }
-
-            if (parameters.MinPrice <= parameters.MaxPrice)
-            {
-                query = query.Where(b => b.Price >= parameters.MinPrice && b.Price <= parameters.MaxPrice);
-            }
-
-            if (parameters.MinPublicationYear <= parameters.MaxPublicationYear)
-            {
-                query = query.Where(b => b.PublicationYear >= parameters.MinPublicationYear
-                    && b.PublicationYear <= parameters.MaxPublicationYear);
-            }
-
-            return PagedList<Book>.ToPagedList(query, parameters.PageNumber, parameters.PageSize);
-        }
-        public async Task<Book> GetByIdAsync(int bookId)
-        {
-            var spec = new DetailedBookSpec(bookId);
-
-            var entity = await UnitOfWork.BookRepository.GetEntityWithSpec(spec);
-
-            if (entity == null)
-                throw new EntityNotFoundException("Book not found");
-
-            return entity;
-        }
-        public async Task<IEnumerable<Book>> GetByAuthorAsync(int authorId)
-        {
-            var spec = new BooksByAuthorSpec(authorId);
-
-            return await UnitOfWork.BookRepository.GetAsync(spec);
-        }
-        public async Task<IEnumerable<Book>> GetByCategoryAsync(int categoryId)
-        {
-            var spec = new BooksByCategorySpec(categoryId);
-
-            return await UnitOfWork.BookRepository.GetAsync(spec);
-        }
-        public async Task<IEnumerable<Book>> GetByPublisherAsync(int publisherId)
-        {
-            var spec = new BooksByPublisherSpec(publisherId);
-
-            return await UnitOfWork.BookRepository.GetAsync(spec);
-        }
-
-
         public async Task<bool> UpdateAsync(Book book,
             int[]? categoryIds = null, int[]? authorIds = null, int? publisherId = null)
         {
@@ -173,6 +139,43 @@ namespace BookStore.Application.Services
 
             UnitOfWork.BookRepository.Update(bookEntity);
             return SaveChangesAndCheckResult();
+        }
+        private async Task<PagedList<Book>> GetBooksBySpecAsync(ISpecification<Book> spec, BookParameters parameters)
+        {
+            var books = await UnitOfWork.BookRepository.GetAsync(spec);
+
+            var query = books.AsQueryable();
+
+            if (!string.IsNullOrEmpty(parameters.SearchTerm))
+            {
+                query = query.Where(b => b.Title.Contains(parameters.SearchTerm)
+                    || b.ISBN.Contains(parameters.SearchTerm));
+            }
+
+            if (parameters.MinPrice <= parameters.MaxPrice)
+            {
+                query = query.Where(b => b.Price >= parameters.MinPrice && b.Price <= parameters.MaxPrice);
+            }
+
+            if (parameters.MinPublicationYear <= parameters.MaxPublicationYear)
+            {
+                query = query.Where(b => b.PublicationYear >= parameters.MinPublicationYear
+                    && b.PublicationYear <= parameters.MaxPublicationYear);
+            }
+
+            if (!string.IsNullOrEmpty(parameters.OrderBy))
+            {
+                query = parameters.OrderBy.ToLower() switch
+                {
+                    "title" => query.OrderBy(b => b.Title),
+                    "price" => query.OrderBy(b => b.Price),
+                    "year" or "publicationyear" or "date" or "publicationdate"
+                        => query.OrderBy(b => b.PublicationYear),
+                    _ => query
+                };
+            }
+
+            return PagedList<Book>.ToPagedList(query, parameters.PageNumber, parameters.PageSize);
         }
         private static void UpdateBookDetails(Book book, Book bookToUpdate)
         {

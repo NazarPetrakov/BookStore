@@ -1,8 +1,5 @@
 ﻿using BookStore.Application.Abstract;
 using BookStore.Application.Abstract.Services;
-using BookStore.Application.Common.Specifications;
-using BookStore.Application.Common.Specifications.Book;
-using BookStore.Application.Common.Specifications.Category;
 using BookStore.Domain.Common.Pagination;
 using BookStore.Domain.Exceptions;
 using BookStore.Domain.Models.Book;
@@ -50,24 +47,19 @@ namespace BookStore.Application.Services
         }
         public async Task<PagedList<Category>> GetPagedListAsync(CategoryParameters parameters)
         {
-            BaseSpecification<Category> spec = new CategoryOrderedByIdSpec();
-
-            if (!string.IsNullOrEmpty(parameters.OrderBy))
-            {
-                spec = parameters.OrderBy.ToLower() switch
-                {
-                    "name" => new CategoryOrderedByNameSpec(),
-                    _ => new CategoryOrderedByIdSpec()
-                };
-            }
-
-            var entities = await UnitOfWork.CategoryRepository.GetAsync(spec);
+            var entities = await UnitOfWork.CategoryRepository.GetAllAsync();
             var query = entities.AsQueryable();
 
             if (!string.IsNullOrEmpty(parameters.SearchTerm))
             {
                 query = query.Where(c => c.Name.Contains(parameters.SearchTerm));
             }
+
+            query = parameters.OrderBy?.ToLower() switch
+            {
+                "name" => query.OrderBy(c => c.Name),
+                _ => query.OrderBy(c => c.Id)
+            };
 
             var result = PagedList<Category>.ToPagedList(query,
                 parameters.PageNumber,

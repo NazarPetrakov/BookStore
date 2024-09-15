@@ -1,10 +1,8 @@
 ﻿using BookStore.Application.Abstract;
 using BookStore.Application.Abstract.Services;
-using BookStore.Application.Common.Specifications;
 using BookStore.Domain.Common.Pagination;
 using BookStore.Domain.Exceptions;
 using BookStore.Domain.Models.Author;
-using BookStore.Application.Common.Specifications.Author;
 
 namespace BookStore.Application.Services
 {
@@ -45,25 +43,20 @@ namespace BookStore.Application.Services
         }
         public async Task<PagedList<Author>> GetPagedListAsync(AuthorParameters parameters)
         {
-            BaseSpecification<Author> spec = new AuthorOrderedByIdSpec();
-
-            if (!string.IsNullOrEmpty(parameters.OrderBy))
-            {
-                spec = parameters.OrderBy.ToLower() switch
-                {
-                    "firstname" => new AuthorOrderedByFirstNameSpec(),
-                    "lastname" => new AuthorOrderedByLastNameSpec(),
-                    _ => new AuthorOrderedByIdSpec()
-                };
-            }
-
-            var entities = await UnitOfWork.AuthorRepository.GetAsync(spec);
+            var entities = await UnitOfWork.AuthorRepository.GetAllAsync();
             var query = entities.AsQueryable();
 
             if (!string.IsNullOrEmpty(parameters.SearchTerm))
             {
-                query = query.Where(c => c.LastName.Contains(parameters.SearchTerm));
+                query = query.Where(a => a.LastName.Contains(parameters.SearchTerm));
             }
+
+            query = parameters.OrderBy?.ToLower() switch
+            {
+                "firstname" => query.OrderBy(a => a.FirstName),
+                "lastname" => query.OrderBy(a => a.LastName),
+                _ => query.OrderBy(a => a.Id)
+            };
 
             var result = PagedList<Author>.ToPagedList(query,
                 parameters.PageNumber,

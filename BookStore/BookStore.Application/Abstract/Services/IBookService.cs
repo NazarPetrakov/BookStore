@@ -15,9 +15,9 @@ namespace BookStore.Application.Abstract.Services
         Task<bool> UpdateAsync(Book book, int[]? categoryIds, int[]? authorIds, int? publisherId);
 
         Task<bool> DeleteAsync(int bookId);
-        Task<IEnumerable<Book>> GetByAuthorAsync(int authorId);
-        Task<IEnumerable<Book>> GetByCategoryAsync(int categoryId);
-        Task<IEnumerable<Book>> GetByPublisherAsync(int publisherId);
+        Task<PagedList<Book>> GetByAuthorPagedListAsync(int authorId, BookParameters parameters);
+        Task<PagedList<Book>> GetByCategoryPagedListAsync(int categoryId, BookParameters parameters);
+        Task<PagedList<Book>> GetByPublisherPagedListAsync(int publisherId, BookParameters parameters);
 
     }
 }

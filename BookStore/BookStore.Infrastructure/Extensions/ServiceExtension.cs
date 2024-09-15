@@ -28,6 +28,10 @@ namespace BookStore.Infrastructure.Extensions
             services.AddScoped<IBookCategoryRepository, BookCategoryRepository>();
             services.AddScoped<IBookAuthorRepository, BookAuthorRepository>();
 
+            services.AddScoped<IReviewRepository, ReviewRepository>();
+            services.AddScoped<IReviewService, ReviewService>();
+
+
             services.AddScoped<IAuthenticateService, AuthenticateService>();
 
             return services;

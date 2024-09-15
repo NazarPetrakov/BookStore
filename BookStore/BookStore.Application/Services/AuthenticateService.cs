@@ -1,6 +1,7 @@
 ﻿using BookStore.Application.Abstract.Services;
 using BookStore.Application.Common.Identity;
 using BookStore.Application.Contracts.Authentication;
+using BookStore.Domain.Exceptions;
 using BookStore.Domain.Models.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -25,7 +26,14 @@ namespace BookStore.Application.Services
             _roleManager = roleManager;
             _configuration = configuration;
         }
+        public async Task<ApplicationUser> GetUserByIdAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new EntityNotFoundException("User not found");
 
+            return user;
+        }
         public async Task<LoginResponse> LoginAsync(LoginModel model)
         {
             var user = await _userManager.FindByNameAsync(model.Username);
@@ -36,6 +44,7 @@ namespace BookStore.Application.Services
                 var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
@@ -106,7 +115,6 @@ namespace BookStore.Application.Services
 
             return new AuthResponse { Status = "Success", Message = "User created successfully!" };
         }
-
         private async Task EnsureRoleExistsAsync(string roleName)
         {
             if (!await _roleManager.RoleExistsAsync(roleName))
